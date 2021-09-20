@@ -1,8 +1,8 @@
-# CS321-Assignment1
+# CS321-Assignment 1
 * Thomas McCoy - NET_ID: tmccoy1@iastate.edu
 * Jens Rasmussen - NET_ID: jensr@iastate.edu
 
-# Assignment 1 
+# Assignment 
 
 COMS 321 - Computer Architecture @ Iowa State University - Assignment 1
 
