@@ -21,4 +21,4 @@ Run using ./legv8emul on either pyrite, linux system/vm.
 
 ## Acknowledgments
 
-Special Thanks to Jeremy Sheaffer for his help and instruction throughout this class.
+Special Thanks to Professor Jeremy Sheaffer for his help and instruction throughout this class.
