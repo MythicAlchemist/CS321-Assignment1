@@ -1,0 +1,124 @@
+// CS321 Programming Assignment #1
+// Jens Rasmussen (jensr) and Thomas McCoy (tmccoy1)
+
+
+// MAIN // 
+start:
+    ADDI X0, XZR, #0            // Start of arr
+    ADDI X1, X1, #1000          // Length of arr
+    BL fill_pro                 // Fill procedure
+    ADDI X0, XZR, #0            // Start of arr
+    ADDI X1, X1, #1000          // Length of arr
+    BL insertion_sort_pro       // Insert_Sort procedure
+    B end
+// MAIN //
+
+
+// FILL //
+fill_pro:
+    STUR X1, [X0, #0]           // Store initial param into start of memory
+    ADDI X0, X0, #8             // Increment memory addr
+    SUBI X1, X1, #1             // Decrement param
+    CBNZ X1, fill_pro
+    BR LR
+// FILL //
+
+
+// INSERTION SORT //
+insertion_sort_pro:
+    ADDI X9, XZR, #0            // Initiate reg to 0
+    ADD X10, X1, XZR            // Store length in temp reg
+is_loop:
+    SUBI SP, SP, #24            // Move stack pointer
+    STUR X10, [SP, #16]         // Store temp reg (length)
+    STUR X9, [SP, #8]           // Store temp reg (i)
+    STUR LR, [SP, #0]           // Store link reg
+
+    ADD X1, X9, XZR             // Param i
+    SUBI X2, X10, #1            // Param length - 1
+    BL insert_sorted_pos_pro    // Procedure call
+
+    LDUR LR, [SP, #0]           // Load link reg
+    LDUR X9, [SP, #8]           // Load temp reg (i)
+    LDUR X10, [SP, #16]         // Load temp reg (length)
+    ADDI SP, SP, #24            // Move stack pointer
+
+    ADDI X9, X9, #1             // Increment i
+    SUBS XZR, X9, X10           // X9 temp reg (i), X10 length param
+    B.LT is_loop
+    BR LR
+// INSERTION SORT //
+
+
+// INSERT SORTED POS//
+insert_sorted_pos_pro:
+    LSL X10, X1, #3             // i * 8
+    ADD X9, X0, X10             // v = addr[pos]
+    ADD X10, X1, XZR            // Move pos to temp reg
+    
+    SUBI SP, SP, #24            // Move stack pointer
+    STUR LR, [SP, #16]          // Store link reg
+    STUR X10, [SP, #8]          // Store temp reg (pos)
+    STUR X9, [SP, #0]           // Store temp reg (v)
+
+    ADD X1, X9, XZR             // Update param
+    BL find_sorted_pos_pro      // Procedure call - Will return into X1
+
+    LDUR X9, [SP, #0]           // Load temp reg (v)
+    LDUR X10, [SP, #8]          // Load temp reg (pos)
+    LDUR LR, [SP, #16]          // Load link reg
+    ADDI SP, SP, #24            // Move stack pointer
+
+    SUBI SP, SP, #16            // Move Stack pointer
+    STUR LR, [SP, #8]           // Store link reg
+    STUR X9, [SP, #0]           // Store temp reg (v)
+
+    ADD X2, X10, XZR            // Update param 
+    BL shift_right_pro          // Procedure call
+
+    LDUR X9, [SP, #0]           // Load temp reg (v)
+    LDUR LR, [SP, #8]           // Load link reg
+    ADDI SP, SP, #16            // Move stack pointer
+
+    LSL X10, X1, #3             // p * 8
+    LSR X9, X9, #3
+    STUR X9, [X10, #0]          // Store number into sorted place
+    BR LR                       // Return
+// INSERT SORTED POS//
+
+
+// FIND SORTED POS //
+find_sorted_pos_pro:
+    ADD X9, XZR, XZR            // Temp reg (i = 0)
+fs_loop:
+    LSL X10, X9, #3             // i * 8
+    SUBS XZR, X10, X1           // X10 (memory addr), X1 (v)
+    B.GE break                  // Conditional branch element >= v
+    SUBS XZR, X9, X2            // X9 (i), X2 (final)       
+    ADDI X9, X9, #1             // Increment i
+    B.LT fs_loop                // Loop while i < final
+break:
+    ADD X1, X9, XZR             // Return i
+    BR LR
+// FIND SORTED POS //
+
+
+// SHIFT RIGHT //
+shift_right_pro:
+    SUBI X9, X2, #1             // Temp reg (i = final - 1)
+sr_loop:
+    ADDI X10, X9, #1            // Temp reg (i + 1)
+    LSL X11, X9, #3             // Temp reg (i * 8)
+    LSL X12, X10, #3            // Temp reg ((i + 1) * 8)
+    STUR X11, [X12, #0]         // Store X11's value into X12
+    SUBS XZR, X9, X1            // X9 (i), X1 (pos)
+    SUBI X9, X9, #1             // Decrement i
+    B.GE sr_loop                // Loop while i >= pos 
+    BR LR                       // Return
+// SHIFT RIGHT // 
+
+
+// END //
+end: 
+    DUMP
+// END //
